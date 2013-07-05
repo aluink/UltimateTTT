@@ -4,6 +4,12 @@ import java.util.Stack;
 
 public class TTTBoard {
 
+	short [] winScenarios = {
+			0x7,0x38,0x1C0,
+			0x124,0x92,0x49,
+			0x111,0x24
+	};
+	
 	short[] posToOffset = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512 };
 
 	short[][] boards;
@@ -18,10 +24,36 @@ public class TTTBoard {
 			}
 		}
 	}
-
+	
+	public boolean isWin(short g){
+		for(int i = 0;i < 8;i++){
+			if((g & winScenarios[i]) == winScenarios[i]){
+				return true;
+			}
+		} return false;
+	}
+	
+	public boolean isOver(byte m){
+		return     isWin(boards[0][m/9]) 
+				|| isWin(boards[1][m/9]) 
+				|| (boards[0][m/9] | boards[1][m/9]) == 0x1FF;
+	}
+	
 	public boolean isLegal(byte m){
 		if(m >= 0 && m < 81){
 			if(moves.empty()) return true;
+			byte pgame = (byte)(moves.peek()/9);
+			byte ppos = (byte)(moves.peek()%9);
+			
+			byte cgame = (byte)(m/9);
+			byte cpos = (byte)(m%9);
+			
+			// If legal target is over then as 
+			// long as the new game isn't over and proper
+			if(isOver(moves.peek())){
+				return isOver(m) && m / 9 != ppos;
+			}
+			
 			return moves.peek() % 9 == m / 9;
 		} return false;
 	}
@@ -49,9 +81,9 @@ public class TTTBoard {
 	 * @return The piece at the position, null if empty.
 	 */
 	public Piece getPos(int p) {
-		if (boards[0][p/9] >> (p % 9) == 1) {
+		if ((boards[0][p/9] >> (p % 9) & 1) == 1) {
 			return Piece.X;
-		} else if (boards[1][p/9] >> (p % 9) == 1) {
+		} else if ((boards[1][p/9] >> (p % 9) & 1) == 1) {
 			return Piece.O;
 		} else {
 			return null;

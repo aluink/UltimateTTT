@@ -61,7 +61,10 @@ public class ConsoleUI {
 			else if(input.startsWith("go")){
 				input = input.substring(3);
 				byte pos = (byte)((input.charAt(0)-'1')*9+(input.charAt(1)-'1'));
-				if(b.isLegal(pos)) b.makemove(pos);
+				//if(b.isLegal(pos))
+					b.makemove(pos);
+				//else
+				//	System.out.println("Illegal move");
 			}
 		}
 	}
